@@ -34,39 +34,18 @@ emotion_emojis = {
 
 # 2. CACHED DATA LOADING
 
-import os
-
 @st.cache_resource
 def load_model_artifacts():
-    base_path = "/Users/gracesharkey/Desktop/GoEmotions"
-    model_path = os.path.join(base_path, "saved_models", "svm_emotion_model.pkl")
-    vectorizer_path = os.path.join(base_path, "saved_models", "tfidf_vectorizer.pkl")
+    # Look directly inside the project directory, regardless of what computer runs it
+    model_path = "saved_models/svm_emotion_model.pkl"
+    vectorizer_path = "saved_models/tfidf_vectorizer.pkl"
     
     try:
         model = joblib.load(model_path)
         vectorizer = joblib.load(vectorizer_path)
         return model, vectorizer
     except FileNotFoundError:
-        st.error("❌ Error: Model files not found inside the saved_models folder.")
-        
-        # --- DIRECTORY MAP DETECTIVE ---
-        st.markdown("### 🔍 Live Folder Inspection Map")
-        st.write(f"Let's see what is actually inside your `{base_path}` folder right now:")
-        
-        if os.path.exists(base_path):
-            for root, dirs, files in os.walk(base_path):
-                # Calculate depth to format as a nice tree structure
-                level = root.replace(base_path, '').count(os.sep)
-                indent = ' ' * 4 * (level)
-                st.code(f"{indent}📁 {os.path.basename(root)}/")
-                subindent = ' ' * 4 * (level + 1)
-                for f in files:
-                    if f.endswith('.pkl') or f.endswith('.py') or f.endswith('.tsv'):
-                        st.code(f"{subindent}📄 {f}")
-        else:
-            st.error(f"The folder path `{base_path}` does not seem to exist on this Mac. Are you sure your folder is named exactly 'GoEmotions' and is on your Desktop?")
-            
-        st.info("💡 Tip: Look at the map above. If you don't see a `saved_models` folder with two `.pkl` files inside it, your `pipeline.py` hasn't finished running successfully yet.")
+        st.error("❌ Error: Model artifacts not found. Please verify the saved_models folder contains your .pkl files.")
         return None, None
 
 model, vectorizer = load_model_artifacts()
